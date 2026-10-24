@@ -13,10 +13,31 @@
   ],
   "packageRules": [
     {
-      "description": "Always bump Caddy builder and runtime together",
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["caddy"],
-      "groupName": "caddy"
+      "description": "Image contents (Caddy + bouncer): offer patch and minor as separate PRs, so a patch is never held back by a pending minor",
+      "matchManagers": ["dockerfile", "custom.regex"],
+      "separateMinorPatch": true
+    },
+    {
+      "description": "Override preset: only patch updates of the image contents are automerged",
+      "matchManagers": ["dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["patch", "digest"],
+      "groupName": "image patch updates",
+      "groupSlug": "image-patch",
+      "automerge": true
+    },
+    {
+      "description": "Override preset: minor updates of the image contents need a manual merge",
+      "matchManagers": ["dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["minor"],
+      "groupName": "image minor updates",
+      "groupSlug": "image-minor",
+      "automerge": false
+    },
+    {
+      "description": "Major updates of the image contents need a manual merge",
+      "matchManagers": ["dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
     }
   ]
 }
