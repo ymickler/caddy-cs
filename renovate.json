@@ -13,7 +13,7 @@
   ],
   "packageRules": [
     {
-      "description": "Caddy-Builder und Runtime immer zusammen anheben",
+      "description": "Always bump Caddy builder and runtime together",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["caddy"],
       "groupName": "caddy"

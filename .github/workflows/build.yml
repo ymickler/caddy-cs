@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths: [Dockerfile, .github/workflows/build.yml]
   schedule:
-    # wöchentlich neu bauen: holt Sicherheits-Patches des Basis-Images (gleicher Caddy-Tag, neuer Digest)
+    # weekly rebuild: picks up security patches of the base image (same Caddy tag, new digest)
     - cron: "17 3 * * 1"
   workflow_dispatch:
 
@@ -20,19 +20,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Versionen aus Dockerfile lesen
+      - name: Read versions from Dockerfile
         id: v
         run: |
           echo "caddy=$(grep -m1 -oP '^FROM caddy:\K[0-9.]+(?=-builder)' Dockerfile)" >> "$GITHUB_OUTPUT"
           echo "bouncer=$(grep -m1 -oP '^ARG BOUNCER_VERSION=\K\S+' Dockerfile)" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
-      - name: Bauen (lokal laden)
+      - name: Build (load locally)
         uses: docker/build-push-action@v6
         with:
           context: .
           load: true
           tags: caddy-cs:test
-      - name: Smoke-Test
+      - name: Smoke test
         run: |
           docker run --rm caddy-cs:test caddy version
           docker run --rm caddy-cs:test caddy list-modules | grep -E '^(crowdsec|http.handlers.crowdsec)$'
@@ -41,7 +41,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pushen
+      - name: Push
         uses: docker/build-push-action@v6
         with:
           context: .

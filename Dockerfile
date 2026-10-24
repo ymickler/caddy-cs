@@ -1,4 +1,4 @@
-# Caddy mit CrowdSec-Bouncer (HTTP-Handler). Beide FROM-Tags und die Modulversion hebt Renovate an.
+# Caddy with the CrowdSec bouncer (HTTP handler). Renovate bumps both FROM tags and the module version.
 FROM caddy:2.11.7-builder AS builder
 # renovate: datasource=go depName=github.com/hslatman/caddy-crowdsec-bouncer
 ARG BOUNCER_VERSION=v0.14.1
