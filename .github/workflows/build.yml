@@ -3,14 +3,14 @@ on:
   push:
     # main: build + publish; renovate/*: build + smoke test only (status check for Renovate branch automerge)
     branches: [main, "renovate/**"]
-    paths: [Dockerfile, .github/workflows/build.yml]
+    paths: [Dockerfile, .github/workflows/build.yml, .github/scripts/**]
   schedule:
     # weekly rebuild: picks up security patches of the base image (same Caddy tag, new digest)
     - cron: "17 3 * * 1"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # GitHub release with upstream notes
   packages: write
 
 env:
@@ -53,3 +53,10 @@ jobs:
             ${{ env.IMAGE }}:${{ steps.v.outputs.caddy }}
             ${{ env.IMAGE }}:${{ steps.v.outputs.caddy }}-cs${{ steps.v.outputs.bouncer }}
             ${{ env.IMAGE }}:latest
+      - name: Release with upstream notes (only for new versions)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CADDY: ${{ steps.v.outputs.caddy }}
+          BOUNCER: ${{ steps.v.outputs.bouncer }}
+        run: .github/scripts/release.sh

@@ -13,5 +13,7 @@ run `caddy validate` with the real Caddyfile first; rollback = previous tag.
   built and smoke-tested by CI there, and fast-forwarded into `main` only when green; `main` then publishes the image.
 - Caddy and bouncer: patch and minor updates are applied automatically, major updates (e.g. Caddy 3) are disabled.
 - GitHub Actions updates are applied automatically after a green CI build.
-- The scheduled weekly build picks up patched base images for the same Caddy version.
+- The scheduled weekly build picks up patched base images for the same Caddy version (no new release).
+- Every new version gets a GitHub release (tag = image tag) with the upstream release notes of Caddy and the bouncer
+  since the previous release; mentions and issue numbers from upstream are neutralized.
 - Contributions are not accepted; pull requests and issues are disabled.
