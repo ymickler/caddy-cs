@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>ymickler/renovate-config:dockerfile",
+    "local>ymickler/renovate-config:github-action"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)Dockerfile$/"],
+      "matchStrings": ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\nARG BOUNCER_VERSION=(?<currentValue>\\S+)"]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Caddy-Builder und Runtime immer zusammen anheben",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["caddy"],
+      "groupName": "caddy"
+    }
+  ]
+}
