@@ -4,6 +4,9 @@
     "local>ymickler/renovate-config:dockerfile",
     "local>ymickler/renovate-config:github-action"
   ],
+  "description": "Unattended mode: no pull requests, no issues. Updates are tested on a renovate/* branch (CI build + smoke test) and fast-forwarded into main on success.",
+  "dependencyDashboard": false,
+  "automergeType": "branch",
   "customManagers": [
     {
       "customType": "regex",
@@ -13,31 +16,25 @@
   ],
   "packageRules": [
     {
-      "description": "Image contents (Caddy + bouncer): offer patch and minor as separate PRs, so a patch is never held back by a pending minor",
+      "description": "Image contents (Caddy + bouncer): patch, minor and digest updates are merged automatically after a green CI build",
       "matchManagers": ["dockerfile", "custom.regex"],
-      "separateMinorPatch": true
+      "matchUpdateTypes": ["patch", "minor", "digest", "pin", "pinDigest"],
+      "groupName": "image updates",
+      "groupSlug": "image-updates",
+      "automerge": true,
+      "automergeType": "branch"
     },
     {
-      "description": "Override preset: only patch updates of the image contents are automerged",
-      "matchManagers": ["dockerfile", "custom.regex"],
-      "matchUpdateTypes": ["patch", "digest"],
-      "groupName": "image patch updates",
-      "groupSlug": "image-patch",
-      "automerge": true
-    },
-    {
-      "description": "Override preset: minor updates of the image contents need a manual merge",
-      "matchManagers": ["dockerfile", "custom.regex"],
-      "matchUpdateTypes": ["minor"],
-      "groupName": "image minor updates",
-      "groupSlug": "image-minor",
-      "automerge": false
-    },
-    {
-      "description": "Major updates of the image contents need a manual merge",
+      "description": "Major updates of the image contents (e.g. Caddy 3) are not applied automatically",
       "matchManagers": ["dockerfile", "custom.regex"],
       "matchUpdateTypes": ["major"],
-      "automerge": false
+      "enabled": false
+    },
+    {
+      "description": "GitHub Actions: merged automatically after a green CI build (the CI run on the branch uses the new action versions)",
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "automergeType": "branch"
     }
   ]
 }

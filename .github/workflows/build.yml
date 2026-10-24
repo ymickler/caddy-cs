@@ -1,7 +1,8 @@
 name: build
 on:
   push:
-    branches: [main]
+    # main: build + publish; renovate/*: build + smoke test only (status check for Renovate branch automerge)
+    branches: [main, "renovate/**"]
     paths: [Dockerfile, .github/workflows/build.yml]
   schedule:
     # weekly rebuild: picks up security patches of the base image (same Caddy tag, new digest)
@@ -37,11 +38,13 @@ jobs:
           docker run --rm caddy-cs:test caddy version
           docker run --rm caddy-cs:test caddy list-modules | grep -E '^(crowdsec|http.handlers.crowdsec)$'
       - uses: docker/login-action@v3
+        if: github.ref == 'refs/heads/main'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
           context: .
